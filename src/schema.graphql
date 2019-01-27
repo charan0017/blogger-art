@@ -56,12 +56,14 @@ input CreatePostInput {
     title: String!
     body: String!
     published: Boolean!
+    commentsDisabled: Boolean!
 }
 
 input UpdatePostInput {
     title: String
     body: String
     published: Boolean
+    commentsDisabled: Boolean
 }
 
 input CreateCommentInput {
@@ -90,6 +92,7 @@ type Post {
     title: String!
     body: String!
     published: Boolean!
+    commentsDisabled: Boolean!
     author: User!
     comments: [Comment!]!
     updatedAt: String!

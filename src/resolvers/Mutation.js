@@ -57,16 +57,18 @@ const Mutation = {
             throw new Error('Unable to update post')
         }
         const postPublished = await prisma.exists.Post({ id: args.id, published: true })
-        if (postPublished && typeof args.data.published === false) {
+        const postCommentsNotDisabled = await prisma.exists.Post({ id: args.id, commentsDisabled: false })
+        if ((postPublished && typeof args.data.published === false)
+            || (postCommentsNotDisabled && typeof args.data.commentsDisabled === true)) {
             await prisma.mutation.deleteManyComments({ where: { post: { id: args.id } } })
         }
         return prisma.mutation.updatePost({ where: { id: args.id }, data: args.data }, info)
     },
     createComment: async (parent, { data }, { prisma, request }, info) => {
         const userId = getUserId(request)
-        const postExists = await prisma.exists.Post({ id: data.post, published: true })
+        const postExists = await prisma.exists.Post({ id: data.post, published: true, commentsDisabled: false })
         if (!postExists) {
-            throw new Error('Unable to comment, post un-published')
+            throw new Error('Unable to comment, post un-published or comments are disabled')
         }
         return prisma.mutation.createComment({
             data: {
