@@ -58,8 +58,8 @@ const Mutation = {
         }
         const postPublished = await prisma.exists.Post({ id: args.id, published: true })
         const postCommentsNotDisabled = await prisma.exists.Post({ id: args.id, commentsDisabled: false })
-        if ((postPublished && typeof args.data.published === false)
-            || (postCommentsNotDisabled && typeof args.data.commentsDisabled === true)) {
+        if ((postPublished && args.data.published === false)
+            || (postCommentsNotDisabled && args.data.commentsDisabled === true)) {
             await prisma.mutation.deleteManyComments({ where: { post: { id: args.id } } })
         }
         return prisma.mutation.updatePost({ where: { id: args.id }, data: args.data }, info)
