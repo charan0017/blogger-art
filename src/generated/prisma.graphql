@@ -1,5 +1,5 @@
-# source: http://localhost:4466
-# timestamp: Tue Jan 08 2019 19:54:44 GMT+0530 (India Standard Time)
+# source: http://localhost:4466/blogger-art/dev
+# timestamp: Sun Jan 27 2019 10:13:38 GMT+0530 (India Standard Time)
 
 type AggregateComment {
   count: Int!
@@ -543,6 +543,7 @@ type Post implements Node {
   title: String!
   body: String!
   published: Boolean!
+  commentsDisabled: Boolean!
   author: User!
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
   updatedAt: DateTime!
@@ -563,6 +564,7 @@ input PostCreateInput {
   title: String!
   body: String!
   published: Boolean!
+  commentsDisabled: Boolean!
   author: UserCreateOneWithoutPostsInput!
   comments: CommentCreateManyWithoutPostInput
 }
@@ -581,6 +583,7 @@ input PostCreateWithoutAuthorInput {
   title: String!
   body: String!
   published: Boolean!
+  commentsDisabled: Boolean!
   comments: CommentCreateManyWithoutPostInput
 }
 
@@ -588,6 +591,7 @@ input PostCreateWithoutCommentsInput {
   title: String!
   body: String!
   published: Boolean!
+  commentsDisabled: Boolean!
   author: UserCreateOneWithoutPostsInput!
 }
 
@@ -609,6 +613,8 @@ enum PostOrderByInput {
   body_DESC
   published_ASC
   published_DESC
+  commentsDisabled_ASC
+  commentsDisabled_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -620,6 +626,7 @@ type PostPreviousValues {
   title: String!
   body: String!
   published: Boolean!
+  commentsDisabled: Boolean!
   updatedAt: DateTime!
   createdAt: DateTime!
 }
@@ -757,6 +764,10 @@ input PostScalarWhereInput {
 
   """All values that are not equal to given value."""
   published_not: Boolean
+  commentsDisabled: Boolean
+
+  """All values that are not equal to given value."""
+  commentsDisabled_not: Boolean
   updatedAt: DateTime
 
   """All values that are not equal to given value."""
@@ -846,6 +857,7 @@ input PostUpdateInput {
   title: String
   body: String
   published: Boolean
+  commentsDisabled: Boolean
   author: UserUpdateOneRequiredWithoutPostsInput
   comments: CommentUpdateManyWithoutPostInput
 }
@@ -854,12 +866,14 @@ input PostUpdateManyDataInput {
   title: String
   body: String
   published: Boolean
+  commentsDisabled: Boolean
 }
 
 input PostUpdateManyMutationInput {
   title: String
   body: String
   published: Boolean
+  commentsDisabled: Boolean
 }
 
 input PostUpdateManyWithoutAuthorInput {
@@ -889,6 +903,7 @@ input PostUpdateWithoutAuthorDataInput {
   title: String
   body: String
   published: Boolean
+  commentsDisabled: Boolean
   comments: CommentUpdateManyWithoutPostInput
 }
 
@@ -896,6 +911,7 @@ input PostUpdateWithoutCommentsDataInput {
   title: String
   body: String
   published: Boolean
+  commentsDisabled: Boolean
   author: UserUpdateOneRequiredWithoutPostsInput
 }
 
@@ -1048,6 +1064,10 @@ input PostWhereInput {
 
   """All values that are not equal to given value."""
   published_not: Boolean
+  commentsDisabled: Boolean
+
+  """All values that are not equal to given value."""
+  commentsDisabled_not: Boolean
   updatedAt: DateTime
 
   """All values that are not equal to given value."""
