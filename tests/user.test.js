@@ -66,3 +66,39 @@ test('Should fetch user profile', async () => {
     expect(data.me.name).toBe(userOne.user.name)
     expect(data.me.email).toBe(userOne.user.email)
 })
+
+test('Should not sign-up a user with email that is already in use', async () => {
+    const variables = {
+        data: {
+            name: 'Test User',
+            email: userOne.input.email,
+            password: 'abc12345'
+        }
+    }
+    await expect(
+        client.mutate({ mutation: createUser, variables })
+    ).rejects.toThrow()
+})
+
+test('Should login and provide authentication token', async () => {
+    const variables = {
+        data: {
+            email: userOne.input.email,
+            password: 'abc12345'
+        }
+    }
+    const { data } = await client.mutate({ mutation: login, variables })
+    expect(data.login.token).toBeTruthy()
+    expect(typeof data.login.token).toBe('string')
+})
+
+test('Should reject me query without authentication', async () => {
+    await expect(
+        client.query({ query: getUserProfile })
+    ).rejects.toThrow()
+})
+
+test('Should hide emails when fetching list of users', async () => {
+    const { data } = await client.query({ query: getUsers })
+    expect(data.users.map(user => user.email === null)).toBeTruthy()
+})

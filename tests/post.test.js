@@ -43,7 +43,8 @@ test('Should create a new post', async () => {
         data: {
             title: 'My Third Post',
             body: '...',
-            published: true
+            published: true,
+            commentsDisabled: false
         }
     }
     const { data } = await client.mutate({ mutation: createPost, variables })

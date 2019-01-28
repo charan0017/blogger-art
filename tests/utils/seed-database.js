@@ -28,7 +28,8 @@ const postOne = {
     input: {
         title: 'My First Blog Post',
         body: '...',
-        published: true
+        published: true,
+        commentsDisabled: false
     },
     post: undefined
 }
@@ -37,7 +38,8 @@ const postTwo = {
     input: {
         title: 'My Second Blog Post',
         body: '...',
-        published: false
+        published: false,
+        commentsDisabled: false
     },
     post: undefined
 }
