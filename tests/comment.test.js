@@ -2,7 +2,7 @@ import 'cross-fetch/polyfill'
 
 import prisma from '../src/prisma'
 import getClient from './utils/get-client'
-import seedDatabase, { userOne, userTwo, postOne, postTwo, commentOne , commentTwo } from './utils/seed-database'
+import seedDatabase, { userOne, userTwo, postOne, postTwo, postThree, commentOne , commentTwo } from './utils/seed-database'
 import { getComments, createComment, updateComment, deleteComment, subscribeToComments } from './utils/operations'
 
 jest.setTimeout(15000)
@@ -138,6 +138,19 @@ test('Should fetch post comments', async () => {
     const { data } = await client.query({ query: getComments })
     expect(Array.isArray(data.comments)).toBeTruthy()
     expect(data.comments.length).toBe(2)
+})
+
+test('Should not be able to create a comment on commentsDisabled post', async () => {
+    const client = getClient(userTwo.jwt)
+    const variables = {
+        data: {
+            text: 'I enjoyed reading it',
+            post: postThree.post.id
+        }
+    }
+    await expect(
+        client.mutate({ mutation: createComment, variables })
+    ).rejects.toThrow()
 })
 
 test('Should subscribe to comments for a post', async (done) => {

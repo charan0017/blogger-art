@@ -44,6 +44,15 @@ const postTwo = {
     post: undefined
 }
 
+const postThree = {
+    input: {
+        title: 'My Third Blog Post',
+        body: '...',
+        published: true,
+        commentsDisabled: true
+    }
+}
+
 const commentOne = {
     input: {
         text: 'This is Fantastic!'
@@ -80,6 +89,12 @@ const seedDatabase = async () => {
             author: { connect: { email: userOne.user.email } }
         }
     })
+    postThree.post = await prisma.mutation.createPost({
+        data: {
+            ...postThree.input,
+            author: { connect: { email: userOne.user.email } }
+        }
+    })
 
     commentOne.comment = await prisma.mutation.createComment({
         data: {
@@ -97,4 +112,4 @@ const seedDatabase = async () => {
     })
 }
 
-export { userOne, userTwo, postOne, postTwo, commentOne, commentTwo, seedDatabase as default }
+export { userOne, userTwo, postOne, postTwo, postThree, commentOne, commentTwo, seedDatabase as default }
