@@ -49,6 +49,7 @@ const getPosts = gql`
             title
             body
             published
+            commentsDisabled
         }
     }
 `
@@ -59,6 +60,19 @@ const myPosts = gql`
             id
             title
             published
+            commentsDisabled
+        }
+    }
+`
+
+const getPostById = gql`
+    query($id: ID!) {
+        post(id: $id) {
+            id
+            title
+            body
+            published
+            commentsDisabled
         }
     }
 `
@@ -137,6 +151,6 @@ const subscribeToComments = gql`
 
 export {
     createUser, getUsers, login, getUserProfile,
-    getPosts, myPosts, updatePost, createPost, deletePost, subscribeToPosts,
+    getPosts, myPosts, getPostById, updatePost, createPost, deletePost, subscribeToPosts,
     deleteComment, subscribeToComments
 }

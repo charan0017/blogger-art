@@ -2,8 +2,8 @@ import 'cross-fetch/polyfill'
 
 import prisma from '../src/prisma'
 import getClient from './utils/get-client'
-import seedDatabase, { userOne, postOne, postTwo } from './utils/seed-database';
-import { getPosts, myPosts, updatePost, createPost, deletePost, subscribeToPosts } from './utils/operations'
+import seedDatabase, { userOne, userTwo, postOne, postTwo } from './utils/seed-database'
+import { getPosts, myPosts, getPostById, updatePost, createPost, deletePost, subscribeToPosts } from './utils/operations'
 
 jest.setTimeout(15000)
 
@@ -60,6 +60,99 @@ test('Should delete post', async () => {
     await client.mutate({ mutation: deletePost, variables })
     const postExists = await prisma.exists.Post({ id: postTwo.post.id })
     expect(postExists).toBeFalsy()
+})
+
+test('Should not be able to update another users post', async () => {
+    const client = getClient(userTwo.jwt)
+    const variables = {
+        id: postOne.post.id,
+        data: { commentsDisabled: true }
+    }
+    await expect(
+        client.mutate({ mutation: updatePost, variables })
+    ).rejects.toThrow()
+})
+
+test('Should not be able to delete another users post', async () => {
+    const client = getClient(userTwo.jwt)
+    const variables = {
+        id: postOne.post.id
+    }
+    await expect(
+        client.mutate({ mutation: deletePost, variables })
+    ).rejects.toThrow()
+})
+
+test('Should require authentication to create post', async () => {
+    const variables = {
+        data: {
+            title: 'My Third Post',
+            body: '...',
+            published: true,
+            commentsDisabled: false
+        }
+    }
+    await expect(
+        client.mutate({ mutation: createPost, variables })
+    ).rejects.toThrow()
+})
+
+test('Should require authentication to update post', async () => {
+    const variables = {
+        id: postOne.post.id,
+        data: { commentsDisabled: true }
+    }
+    await expect(
+        client.mutate({ mutation: updatePost, variables })
+    ).rejects.toThrow()
+})
+
+test('Should require authentication to delete post', async () => {
+    const variables = {
+        id: postOne.post.id
+    }
+    await expect(
+        client.mutate({ mutation: deletePost, variables })
+    ).rejects.toThrow()
+})
+
+test('Should fetch published post by id', async () => {
+    const variables = {
+        id: postOne.post.id
+    }
+    const { data } = await client.query({ query: getPostById, variables })
+    const { post: postData } = data
+    expect(postData).toBeTruthy()
+    expect(postData.id).toBe(postOne.post.id)
+    expect(postData.title).toBe(postOne.post.title)
+    expect(postData.body).toBe(postOne.post.body)
+    expect(postData.published).toBe(postOne.post.published)
+    expect(postData.commentsDisabled).toBe(postOne.post.commentsDisabled)
+})
+
+test('Should fetch own draft post by id', async () => {
+    const client = getClient(userOne.jwt)
+    const variables = {
+        id: postTwo.post.id
+    }
+    const { data } = await client.query({ query: getPostById, variables })
+    const { post: postData } = data
+    expect(postData).toBeTruthy()
+    expect(postData.id).toBe(postTwo.post.id)
+    expect(postData.title).toBe(postTwo.post.title)
+    expect(postData.body).toBe(postTwo.post.body)
+    expect(postData.published).toBe(postTwo.post.published)
+    expect(postData.commentsDisabled).toBe(postTwo.post.commentsDisabled)
+})
+
+test('Should not fetch draft post from other user', async () => {
+    const client = getClient(userTwo.jwt)
+    const variables = {
+        id: postTwo.post.id
+    }
+    await expect(
+        client.query({ query: getPostById, variables })
+    ).rejects.toThrow()
 })
 
 test('Should subscribe to changes for post', async (done) => {
