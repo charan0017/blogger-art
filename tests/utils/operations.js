@@ -129,6 +129,39 @@ const subscribeToPosts = gql`
     }
 `
 
+const getComments = gql`
+    query {
+        comments {
+            id
+            text
+        }
+    }
+`
+
+const createComment = gql`
+    mutation($data: CreateCommentInput!) {
+        createComment(data: $data) {
+            id
+            text
+            author {
+                id
+            }
+            post {
+                id
+            }
+        }
+    }
+`
+
+const updateComment = gql`
+    mutation($id: ID!, $data: UpdateCommentInput!) {
+        updateComment(id: $id, data: $data) {
+            id
+            text
+        }
+    }
+`
+
 const deleteComment = gql`
     mutation($id: ID!) {
         deleteComment(id: $id) {
@@ -152,5 +185,5 @@ const subscribeToComments = gql`
 export {
     createUser, getUsers, login, getUserProfile,
     getPosts, myPosts, getPostById, updatePost, createPost, deletePost, subscribeToPosts,
-    deleteComment, subscribeToComments
+    getComments, createComment, updateComment, deleteComment, subscribeToComments
 }
